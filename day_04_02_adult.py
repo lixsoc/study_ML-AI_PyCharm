@@ -1,58 +1,152 @@
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.optimizers import Adam
-
-from sklearn import preprocessing as ppc
-
+# Day_04_02_adult.py
+import tensorflow.keras as keras
 import numpy as np
 import pandas as pd
+from sklearn import preprocessing, model_selection
 
-def get_data(file_path: str):
-    names = """
-    age: continuous.
-    workclass: Private, Self-emp-not-inc, Self-emp-inc, Federal-gov, Local-gov, State-gov, Without-pay, Never-worked.
-    fnlwgt: continuous.
-    education: Bachelors, Some-college, 11th, HS-grad, Prof-school, Assoc-acdm, Assoc-voc, 9th, 7th-8th, 12th, Masters, 1st-4th, 10th, Doctorate, 5th-6th, Preschool.
-    education-num: continuous.
-    marital-status: Married-civ-spouse, Divorced, Never-married, Separated, Widowed, Married-spouse-absent, Married-AF-spouse.
-    occupation: Tech-support, Craft-repair, Other-service, Sales, Exec-managerial, Prof-specialty, Handlers-cleaners, Machine-op-inspct, Adm-clerical, Farming-fishing, Transport-moving, Priv-house-serv, Protective-serv, Armed-Forces.
-    relationship: Wife, Own-child, Husband, Not-in-family, Other-relative, Unmarried.
-    race: White, Asian-Pac-Islander, Amer-Indian-Eskimo, Other, Black.
-    sex: Female, Male.
-    capital-gain: continuous.
-    capital-loss: continuous.
-    hours-per-week: continuous.
-    native-country: United-States, Cambodia, England, Puerto-Rico, Canada, Germany, Outlying-US(Guam-USVI-etc), India, Japan, Greece, South, China, Cuba, Iran, Honduras, Philippines, Italy, Poland, Jamaica, Vietnam, Mexico, Portugal, Ireland, France, Dominican-Republic, Laos, Ecuador, Taiwan, Haiti, Columbia, Hungary, Guatemala, Nicaragua, Scotland, Thailand, Yugoslavia, El-Salvador, Trinadad&Tobago, Peru, Hong, Holand-Netherlands.
-    """
 
-    names.split(':')
-    print(names)
+# 퀴즈
+# adult.data 파일로 학습하고 adult.test 파일에 대해 결과를 예측하세요
+def get_data_encoder(file_path):
+    # 1단계 파일 읽기
+    names = ['age', 'workclass', 'fnlwgt', 'education', 'education-num',
+             'marital-status', 'occupation', 'relationship', 'race', 'sex',
+             'capital-gain', 'capital-loss', 'hours-per-week', 'native-country',
+             'income']
+    adult = pd.read_csv(file_path,
+                        names=names,
+                        sep=', ',
+                        engine='python')
+    # print(adult)
 
-    # 1
-    names = ['age','workclass','fnlwgt','education','education-num','marital-status',
-             'occupation','relationship','race','sex','capital-gain','capital-loss',
-             'hours-per-week','native-country','income']
-    # 셰퍼레이터가 ','한글자에서 ', '두글자가 되면 패턴으로 바뀌어서 파이썬으로 엔진을 바꿔줘야 함.
-    adult = pd.read_csv(file_path, header=None, names=names, sep=', ', engine='python')
+    # print(adult.values[:5, 0])    # [39 50 38 53 28]
+    # print(adult.values[:5, 1])    # ['State-gov' 'Self-emp-not-inc' 'Private' 'Private' 'Private']
 
-    # 2
-    # print(adult.values[:5, 0])
-    # print(adult.values[:5, 1])
-    # # =
     # print(adult['age'].values)
+    # adult.info()
 
-    # 각 컬럼의 데이터 타입
-    adult.info
-
-    x = [
-        adult['age'].values, adult['fnlwgt'].values,
-        adult['education-num'].values, adult['capital-gain'].values,
-        adult['capital-loss'].values, adult['hours-per-week'].values
-    ]
+    # 2단계
+    x = [adult['age'].values, adult['fnlwgt'].values,
+         adult['education-num'].values, adult['capital-gain'].values,
+         adult['capital-loss'].values, adult['hours-per-week'].values]
     x = np.int32(x)
-    x = np.transpose(x)
+    # print(x[:, :5])
 
-    y = np.int32(adult['income'].values == '<=50K')
+    x = np.transpose(x)
+    # print(x.shape, x.dtype)        # (32561, 6) int64
+    # print(x[:5, :])
+
+    enc = preprocessing.LabelEncoder()
+    y = enc.fit_transform(adult['income'].values)
+    # print(y[:10])                 # [0 0 0 0 0 0 0 1 1 1]
+
+    # 퀴즈
+    # 문자열 데이터를 x 데이터에 추가하세요
+    workclass = enc.fit_transform(adult['workclass'].values)
+    education = enc.fit_transform(adult['education'].values)
+    marital = enc.fit_transform(adult['marital-status'].values)
+    occupation = enc.fit_transform(adult['occupation'].values)
+    relationship = enc.fit_transform(adult['relationship'].values)
+    race = enc.fit_transform(adult['race'].values)
+    sex = enc.fit_transform(adult['sex'].values)
+    native = enc.fit_transform(adult['native-country'].values)
+
+    added = [workclass, education, marital, occupation,
+             relationship, race, sex, native]
+    added = np.transpose(added)
+    # print(added.shape, added.dtype)       # (32561, 8) int32
+
+    x = np.concatenate([x, added], axis=1)
+    # print(x.shape)                        # (32561, 14)
+
+    # x = preprocessing.scale(x)
+    x = preprocessing.minmax_scale(x)
 
     return x, y
 
+
+# 퀴즈
+# encoder 대신 binarizer 사용하는 코드로 수정하세요
+def get_data_binarizer(file_path):
+    # 1단계 파일 읽기
+    names = ['age', 'workclass', 'fnlwgt', 'education', 'education-num',
+             'marital-status', 'occupation', 'relationship', 'race', 'sex',
+             'capital-gain', 'capital-loss', 'hours-per-week', 'native-country',
+             'income']
+    adult = pd.read_csv(file_path,
+                        names=names,
+                        sep=', ',
+                        engine='python')
+    # print(adult)
+
+    # print(adult.values[:5, 0])    # [39 50 38 53 28]
+    # print(adult.values[:5, 1])    # ['State-gov' 'Self-emp-not-inc' 'Private' 'Private' 'Private']
+
+    # print(adult['age'].values)
+    # adult.info()
+
+    # 2단계
+    x = [adult['age'].values, adult['fnlwgt'].values,
+         adult['education-num'].values, adult['capital-gain'].values,
+         adult['capital-loss'].values, adult['hours-per-week'].values]
+    x = np.int32(x)
+    # print(x[:, :5])
+
+    x = np.transpose(x)
+    # print(x.shape, x.dtype)        # (32561, 6) int64
+    # print(x[:5, :])
+
+    enc = preprocessing.LabelEncoder()
+    y = enc.fit_transform(adult['income'].values)
+    # print(y[:10])                 # [0 0 0 0 0 0 0 1 1 1]
+
+    # 퀴즈
+    # 문자열 데이터를 x 데이터에 추가하세요
+    bin = preprocessing.LabelBinarizer()
+    workclass = bin.fit_transform(adult['workclass'].values)
+    education = bin.fit_transform(adult['education'].values)
+    marital = bin.fit_transform(adult['marital-status'].values)
+    occupation = bin.fit_transform(adult['occupation'].values)
+    relationship = bin.fit_transform(adult['relationship'].values)
+    race = bin.fit_transform(adult['race'].values)
+    sex = bin.fit_transform(adult['sex'].values)
+    # train과 test 클래스 갯수가 달라서 skip
+    native = bin.fit_transform(adult['native-country'].values)
+    # print(native.shape, sex.shape)    # (32561, 42) (32561, 1)
+
+    x = np.concatenate([x,
+                        workclass, education, marital, occupation,
+                        relationship, race, sex], axis=1)
+
+    # x = preprocessing.scale(x)
+    x = preprocessing.minmax_scale(x)
+
+    return x, y
+
+
+# x_train, y_train = get_data_encoder('data/adult.data')
+# x_test, y_test = get_data_encoder('data/adult.test')
+# print(x_train.shape, y_train.shape)   # (32561, 14) (32561,)
+# print(x_test.shape, y_test.shape)     # (16281, 14) (16281,)
+
+x_train, y_train = get_data_binarizer('data/adult.data')
+x_test, y_test = get_data_binarizer('data/adult.test')
+# print(x_train.shape, y_train.shape)   # (32561, 65) (32561,)
+# print(x_test.shape, y_test.shape)     # (16281, 65) (16281,)
+
+# 퀴즈
+# 앞에서 읽어온 데이터에 대해 모델을 구축하세요
+# 4단계
+model = keras.Sequential()
+model.add(keras.layers.Dense(32, activation='relu'))
+model.add(keras.layers.Dense(12, activation='relu'))
+model.add(keras.layers.Dense(1, activation='sigmoid'))
+
+model.compile(optimizer=keras.optimizers.Adam(0.001),
+              loss=keras.losses.binary_crossentropy,
+              metrics='acc')
+
+model.fit(x_train, y_train, epochs=100, verbose=2,
+          batch_size=100,
+          validation_data=(x_test, y_test))
+# print(model.evaluate(x_test, y_test, verbose=0))
