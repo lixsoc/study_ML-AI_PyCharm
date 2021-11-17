@@ -5,9 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1a239658-0fe5-42ef-91d3-f2445e0a08ec" name="Changes" comment="main_commit">
+<<<<<<< HEAD
       <change afterPath="$PROJECT_DIR$/Day_12_03_functional.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Day_08_02_addition.py" beforeDir="false" afterPath="$PROJECT_DIR$/Day_08_02_addition.py" afterDir="false" />
+=======
+      <change afterPath="$PROJECT_DIR$/.idea/csv-plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Day_08_01_google.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Day_08_02_addition.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/GOOG.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Day_07_02_stock.py" beforeDir="false" afterPath="$PROJECT_DIR$/Day_07_02_stock.py" afterDir="false" />
+>>>>>>> 8f67cf4056c895405c92ffaf7b302ad8a87102db
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,6 +47,7 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="settings.editor.splitter.proportion" value="0.33095723" />
   </component>
+<<<<<<< HEAD
   <component name="RunManager" selected="Python.Day_12_03_functional">
     <configuration name="Day_08_01_google" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="RNN" />
@@ -61,6 +71,10 @@
       <method v="2" />
     </configuration>
     <configuration name="Day_08_02_addition" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+=======
+  <component name="RunManager" selected="Python.Day_08_02_addition">
+    <configuration name="Day_08_01_google" type="PythonConfigurationType" factoryName="Python" temporary="true">
+>>>>>>> 8f67cf4056c895405c92ffaf7b302ad8a87102db
       <module name="RNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -72,7 +86,11 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+<<<<<<< HEAD
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Day_08_02_addition.py" />
+=======
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Day_08_01_google.py" />
+>>>>>>> 8f67cf4056c895405c92ffaf7b302ad8a87102db
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -81,7 +99,11 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+<<<<<<< HEAD
     <configuration name="Day_12_01_VGG16" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+=======
+    <configuration name="Day_08_02_addition" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+>>>>>>> 8f67cf4056c895405c92ffaf7b302ad8a87102db
       <module name="RNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -93,6 +115,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+<<<<<<< HEAD
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Day_12_01_VGG16.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
@@ -115,6 +138,9 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Day_12_03_functional.py" />
+=======
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Day_08_02_addition.py" />
+>>>>>>> 8f67cf4056c895405c92ffaf7b302ad8a87102db
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -125,8 +151,11 @@
     </configuration>
     <recent_temporary>
       <list>
+<<<<<<< HEAD
         <item itemvalue="Python.Day_12_03_functional" />
         <item itemvalue="Python.Day_12_01_VGG16" />
+=======
+>>>>>>> 8f67cf4056c895405c92ffaf7b302ad8a87102db
         <item itemvalue="Python.Day_08_02_addition" />
         <item itemvalue="Python.Day_08_01_google" />
       </list>

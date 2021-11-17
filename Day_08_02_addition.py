@@ -5,8 +5,11 @@ from tensorflow.keras import Sequential
 from tensorflow.keras import models
 from tensorflow.keras import layers
 from tensorflow.keras import optimizers
+<<<<<<< HEAD
 from tensorflow.keras import losses
 
+=======
+>>>>>>> 8f67cf4056c895405c92ffaf7b302ad8a87102db
 
 
 # 235+17=252
@@ -32,7 +35,11 @@ def make_data(size, digits):
         seen.add(key)
 
         q = '{}+{}'.format(a, b)
+<<<<<<< HEAD
         q = q + '#' * (digits * 2 + 1 - len(q))
+=======
+        query = q + ' #' * (digits * 2 + 1 - len(q))
+>>>>>>> 8f67cf4056c895405c92ffaf7b302ad8a87102db
 
         t = str(a + b)
         t += '#' * (digits + 1 - len(t))
@@ -47,10 +54,15 @@ def make_onehot(funcs, chr2idx):
     batch_size, seq_length, n_features = len(funcs), len(funcs[0]), len(chr2idx)
     ohv = np.zeros([batch_size, seq_length, n_features])
     # print(funcs[batch_size-1][seq_length-1])
+<<<<<<< HEAD
     # print(funcs[0][0])
     for i in range(batch_size):
         for j in range(seq_length):
             # funcs[i][j]
+=======
+    for i in range(batch_size):
+        for j in range(seq_length):
+>>>>>>> 8f67cf4056c895405c92ffaf7b302ad8a87102db
             k = chr2idx[funcs[i][j]]
             ohv[i, j, k] = 1
 
@@ -62,6 +74,7 @@ def make_onehot(funcs, chr2idx):
     return ohv
 
 
+<<<<<<< HEAD
 def model_addition(x, y, x_train, x_test, y_train, y_test):
 
     model = Sequential()
@@ -87,6 +100,13 @@ def model_addition(x, y, x_train, x_test, y_train, y_test):
 
     model.save('Day_08_02_addition.h5')
     return model
+=======
+def model_addition(x, y):
+    x_train, x_test, y_train, y_test = tts(x, y, random_state=2)
+    model = Sequential()
+    model.add(layers.InputLayer(input_shape=x.shape[1:]))
+    model.add()
+>>>>>>> 8f67cf4056c895405c92ffaf7b302ad8a87102db
 
 
 questions, expected = make_data(size=50000, digits=3)
@@ -103,6 +123,7 @@ idx2chr = {i: c for i, c in enumerate(vocab)}
 
 x = make_onehot(questions, chr2idx)
 y = make_onehot(expected, chr2idx)
+<<<<<<< HEAD
 x_train, x_test, y_train, y_test = tts(x, y, random_state=2)
 
 model1 = model_addition(x, y, x_train, x_test, y_train, y_test)
@@ -131,3 +152,5 @@ for _ in range(10):
     print('예측 :', p_dec1)
     print('예측 :', p_dec2)
     print()
+=======
+>>>>>>> 8f67cf4056c895405c92ffaf7b302ad8a87102db
