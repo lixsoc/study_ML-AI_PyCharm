@@ -1,43 +1,46 @@
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.optimizers import Adam
-
-from sklearn import preprocessing as ppc
-from sklearn.model_selection import train_test_split as tts
-
+# Day_04_01_abalone.py
+import tensorflow.keras as keras
 import numpy as np
 import pandas as pd
+from sklearn import preprocessing, model_selection
 
-# 1. 데이터 파일 읽어오기
-# 2. 데이터 분류
-# 3. 데이터 전처리
-
-# 1. 데이터 파일 읽어오기
+# 퀴즈
+# abalone 데이터를 읽어서 80%로 학습하고 20%에 대해 결과를 예측하세요
+# 1단계 : 파일 읽기
 abalone = pd.read_csv('data/abalone.data', header=None)
-print(abalone)
+# print(abalone)
 
-# 2. 데이터 분류
+# 2단계 : x, y 데이터 분리
 x = abalone.values[:, 1:]
-y = abalone.values[:, :1]
+y = abalone.values[:, 0]
+# print(x.shape, y.shape)       # (4177, 8) (4177,)
+# print(y[:5])                  # ['M' 'M' 'F' 'M' 'I']
+# print(x.dtype)                # object
 
-x = ppc.scale(np.float32(x))
-y = ppc.scale(np.float32(y))
+x = np.float32(x)
+# print(x.dtype)                # float32
 
-enc = ppc.LabelEncoder()
+enc = preprocessing.LabelEncoder()
 y = enc.fit_transform(y)
+# print(y[:5])                  # [2 2 0 2 1]
 
-# 3. 데이터 전처리
-tr_x, te_x, tr_y, te_y = tts(x,y, test_size=0.2, random_state=42)
+# 3단계
+x = preprocessing.scale(x)
+# x = preprocessing.minmax_scale(x)
 
-# 4. 러닝
+data = model_selection.train_test_split(x, y, train_size=0.8)
+x_train, x_test, y_train, y_test = data
+
+# 4단계
 model = keras.Sequential()
-model.add(keras.layers.Dense(512, activation='relu'))
-model.add(keras.layers.Dense(128, activation='relu'))
-model.add(keras.layers.Dense(10, activation='softmax'))
+model.add(keras.layers.Dense(32, activation='relu'))
+model.add(keras.layers.Dense(12, activation='relu'))
+model.add(keras.layers.Dense(3, activation='softmax'))
 
-model.compile(optimizer=keras.optimizers.Adam(0.001),
+model.compile(optimizer=keras.optimizers.Adam(0.01),
               loss=keras.losses.sparse_categorical_crossentropy,
               metrics='acc')
 
-model.fit(x_train, y_train, epochs=10, verbose=2)
-print(model.evaluate(x_test, y_test, verbose=0))
+model.fit(x_train, y_train, epochs=100, verbose=2,
+          validation_data=(x_test, y_test))
+# print(model.evaluate(x_test, y_test, verbose=0))
