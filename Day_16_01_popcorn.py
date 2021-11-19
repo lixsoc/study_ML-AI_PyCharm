@@ -4,6 +4,7 @@ import re
 import numpy as np
 import tensorflow.keras as keras
 import matplotlib.pyplot as plt
+import os
 
 
 def clean_str(string):
@@ -37,7 +38,7 @@ def get_train():
 
 
 def get_test():
-    df = pd.read_csv('popcorn/testData.tsv', delimiter='\t')
+    df = pd.read_csv('popcorn/testData.tsv', delimiter='\t', index_col=0)
     # print(df)
 
     x = [clean_str(r).split() for r in df['review']]
@@ -45,12 +46,11 @@ def get_test():
     # print(y.dtype)      # object
     # print(x[:3])
 
-    return x, np.int32(y)
+    return x, y
 
 
 def save_model_rnn():
     x_train, y_train = get_train()
-    x_test, user_ids = get_test()
     # print(y_train.shape, user_ids.shape)      # (25000,) (25000,)
     # print(type(y_train))                      # <class 'numpy.ndarray'>
 
@@ -83,7 +83,63 @@ def save_model_rnn():
               validation_split=0.2, callbacks=[checkpoint])
 
 
-def load_model():
+def save_model_cnn():
+    x_train, y_train = get_train()
+
+    vocab_size, max_len = 2000, 350
+    tokenizer = keras.preprocessing.text.Tokenizer(num_words=vocab_size)
+    tokenizer.fit_on_texts(x_train)
+
+    x_train_seq = tokenizer.texts_to_sequences(x_train)
+    x_train_pad = keras.preprocessing.sequence.pad_sequences(x_train_seq, maxlen=max_len)
+
+    # ---------------------------------------------- #
+
+    inputs = keras.layers.Input(x_train_pad.shape[1:])
+    embeds = keras.layers.Embedding(vocab_size, 100)(inputs)
+
+    output3 = keras.layers.Conv1D(128, 3, activation='relu', name='conv3')(embeds)
+    output3 = keras.layers.GlobalAvgPool1D(name='gap3')(output3)
+
+    output4 = keras.layers.Conv1D(128, 4, activation='relu', name='conv4')(embeds)
+    output4 = keras.layers.GlobalAvgPool1D(name='gap4')(output4)
+
+    output5 = keras.layers.Conv1D(128, 5, activation='relu', name='conv5')(embeds)
+    output5 = keras.layers.GlobalAvgPool1D(name='gap5')(output5)
+
+    concat = keras.layers.concatenate([output3, output4, output5])
+
+    output = keras.layers.Dense(256, activation='relu')(concat)
+    output = keras.layers.Dense(1, activation='sigmoid')(output)
+
+    model = keras.Model(inputs, output)
+
+    # ---------------------------------------------- #
+    model.summary()
+
+    model.compile(optimizer=keras.optimizers.Adam(0.001),
+                  loss=keras.losses.binary_crossentropy,
+                  metrics='acc')
+
+    checkpoint = keras.callbacks.ModelCheckpoint('model/popcorn_cnn_{epoch:02d}_{val_loss:.2f}.h5',
+                                                 save_best_only=True)
+
+    model.fit(x_train_pad, y_train, epochs=100, batch_size=64, verbose=2,
+              validation_split=0.2, callbacks=[checkpoint])
+
+
+def make_submission(user_ids, predictions, filename):
+    f = open(os.path.join('model', filename), 'w', encoding='utf-8')
+
+    f.write('"id","sentiment"\n')
+    for uid, p in zip(user_ids, predictions):
+        # print(uid, int(p > 0.5))
+        f.write('"{}",{}\n'.format(uid, int(p > 0.5)))
+
+    f.close()
+
+
+def load_model(model_name, submission_name):
     x_train, y_train = get_train()
     x_test, user_ids = get_test()
 
@@ -94,14 +150,40 @@ def load_model():
     x_test_seq = tokenizer.texts_to_sequences(x_test)
     x_test_pad = keras.preprocessing.sequence.pad_sequences(x_test_seq, maxlen=max_len)
 
-    model = keras.models.load_model('model/popcorn_03_0.31.h5')
+    model = keras.models.load_model(model_name)
     p = model.predict(x_test_pad)
-    print(p.shape)
+    # print(p.shape)        # (25000, 1)
+
+    p = p.reshape(-1)       # (25000,)
+    make_submission(user_ids, p, submission_name)
+
+
+def load_ensemble(model_name1, model_name2, submission_name):
+    x_train, y_train = get_train()
+    x_test, user_ids = get_test()
+
+    vocab_size, max_len = 2000, 350
+    tokenizer = keras.preprocessing.text.Tokenizer(num_words=vocab_size)
+    tokenizer.fit_on_texts(x_train)
+
+    x_test_seq = tokenizer.texts_to_sequences(x_test)
+    x_test_pad = keras.preprocessing.sequence.pad_sequences(x_test_seq, maxlen=max_len)
+
+    model1 = keras.models.load_model(model_name1)
+    p1 = model1.predict(x_test_pad)
+    p1 = p1.reshape(-1)
+
+    model2 = keras.models.load_model(model_name2)
+    p2 = model2.predict(x_test_pad)
+    p2 = p2.reshape(-1)
+
+    make_submission(user_ids, (p1 + p2) / 2, submission_name)
 
 
 # save_model_rnn()
-load_model()
+# save_model_cnn()
 
+# load_model('model/popcorn_03_0.31.h5', 'popcorn_rnn.csv')
+# load_model('model/popcorn_cnn_03_0.29.h5', 'popcorn_cnn.csv')
 
-
-
+load_ensemble('model/popcorn_03_0.31.h5', 'model/popcorn_cnn_03_0.29.h5', 'popcorn_ensemble.csv')
